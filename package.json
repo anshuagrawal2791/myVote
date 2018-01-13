@@ -1,0 +1,26 @@
+{
+  "name": "voting-app",
+  "version": "1.0.0",
+  "description": "A real time voting app ",
+  "main": "server.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anshuagrawal2791/voting-app.git"
+  },
+  "keywords": [
+    "voting-app",
+    "freecodecamp",
+    "full-stack",
+    "nodejs",
+    "express"
+  ],
+  "author": "Anshuman Agrawal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anshuagrawal2791/voting-app/issues"
+  },
+  "homepage": "https://github.com/anshuagrawal2791/voting-app#readme"
+}
