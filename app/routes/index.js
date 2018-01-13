@@ -13,8 +13,8 @@ module.exports = function (app, passport) {
 		}
 	}
 
-	var clickHandler = new ClickHandler();
-    var userHandler = new UserHandler();
+	var clickHandler = new ClickHandler(passport);
+    var userHandler = new UserHandler(passport);
 	app.route('/')
 		.get(isLoggedIn,function (req, res) {
             console.log('this called');
@@ -26,14 +26,14 @@ module.exports = function (app, passport) {
         res.sendFile(path + '/public/index.html');
     });
 	app.route('/login')
-		.get(function (req, res) {
-			res.sendFile(path + '/public/login.html');
-        });
+		// .get(function (req, res) {
+		// 	res.sendFile(path + '/public/login.html');
+        // });
         
         app.route('/signup')
-		.get(function (req, res) {
-			res.sendFile(path + '/public/signup.html');
-        })
+		// .get(function (req, res) {
+		// 	res.sendFile(path + '/public/signup.html');
+        // })
         .post((req,res)=>{
             userHandler.addUser(req,res);
         });
@@ -54,7 +54,7 @@ module.exports = function (app, passport) {
 
 
     app.route('/user')
-    .get((req,res)=>{
+    .get(isLoggedIn,(req,res)=>{
         res.sendFile(path + '/public/user.html');
     });
 

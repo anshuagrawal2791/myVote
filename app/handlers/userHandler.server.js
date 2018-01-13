@@ -4,7 +4,7 @@ var Users = require('../models/users.js');
 const rand = require('csprng'); 
 var crypto =require('crypto');
 
-function UserHandler () {
+function UserHandler (passport) {
 
 	this.getClicks = function (req, res) {
 		Users
@@ -39,7 +39,10 @@ function UserHandler () {
                 newUser.save((err)=>{
                     if(err)
                     throw err;
-                    res.redirect('/');
+                    passport.authenticate('local')(req, res, function () {
+                        res.redirect('/');
+                    })
+
                 });
              }
          })
