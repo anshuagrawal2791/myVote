@@ -1,0 +1,77 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../favicon.ico">
+    
+        <title>Voting App</title>
+    
+        <!-- Bootstrap core CSS -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet">
+    
+        <!-- Custom styles for this template -->
+        <link href="public/styles/narrow-jumbotron.css" rel="stylesheet">
+      </head>
+    
+
+	<body>
+
+            <div class="container">
+                    <div class="header clearfix">
+                      <nav>
+                        <ul class="nav nav-pills float-right">
+                          <li class="nav-item" id="nav-home">
+                            <a class="nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+                          </li>
+                          <li class="nav-item" id="nav-signup">
+                            <a class="nav-link" href="/signup">Signup</a>
+                          </li>
+                          <li class="nav-item" id="nav-login">
+                            <a class="nav-link" href="/login">Login</a>
+                          </li>
+                          <li class="nav-item" style="display:none" id="nav-hello">
+                              <h3>Hello aaa</h3>
+                            </li>
+                            <li class="nav-item" style="display:none" id="nav-settings">
+                              <a class="nav-link" href="/settings">Change Password</a>
+                            </li>
+                            <li class="nav-item" style="display:none" id="nav-logout">
+                              <a class="nav-link" href="/logout">Logout</a>
+                            </li>
+                        </ul>
+                      </nav>
+                      <h3 class="text-muted">Voting App</h3>
+                    </div>
+              
+
+
+
+
+		<div class="container">	
+			<div class="login">
+			
+
+                <form action="/signup" method="post">
+                    <div class="form-group">
+                            <label for="email">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name">
+                          </div>
+                    <div class="form-group">
+                      <label for="email">Email address:</label>
+                      <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                      <label for="pwd">Password:</label>
+                      <input type="password" class="form-control" id="pwd" name="password">
+                    </div>
+                    <button type="submit" class="btn btn-default">Signup</button>
+                  </form>
+			</div>
+		</div>
+	</body>
+
+</html>
