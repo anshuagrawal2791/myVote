@@ -3,16 +3,27 @@
 var Users = require('../models/users.js');
 const rand = require('csprng'); 
 var crypto =require('crypto');
+const jwt = require('jsonwebtoken');
 
 function UserHandler (passport) {
 
-	this.getClicks = function (req, res) {
+	this.getUser = function (req, res) {
 		Users
-			.findOne({ 'github.id': req.user.github.id }, { '_id': false })
+			.findOne({ 'email': req.user.email }, { '_id': false })
 			.exec(function (err, result) {
 				if (err) { throw err; }
 
-				res.json(result.nbrClicks);
+				res.json(result);
+			});
+	};
+
+    this.getUserById = function (req, res) {
+		Users
+			.findById(req.user, { '_id': false, password:0, hashed_password:0 })
+			.exec(function (err, result) {
+				if (err) { throw err; }
+
+				res.json(result);
 			});
 	};
 
@@ -23,6 +34,7 @@ function UserHandler (passport) {
 			let hashed_password = crypto.createHash('sha512').update(newpass).digest("hex"); 
 
          var newUser = new Users({
+             
              email:req.body.email,
              hashed_password: hashed_password,
              salt: temp,
@@ -39,9 +51,9 @@ function UserHandler (passport) {
                 newUser.save((err)=>{
                     if(err)
                     throw err;
-                    passport.authenticate('local')(req, res, function () {
-                        res.redirect('/');
-                    })
+                    const token = jwt.sign(newUser.id, process.env.JWT_KEY);
+                    console.log('created user'+newUser.toString()+' with token '+ token);
+                    res.json({'token':token});
 
                 });
              }

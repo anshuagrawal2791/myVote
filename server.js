@@ -30,7 +30,12 @@ app.use(passport.session());
 
 routes(app, passport);
 
-var port = process.env.PORT || 8080;
+
+var port = process.env.PORT || 3000;
 app.listen(port,  function () {
+    mongoose.connect(process.env.MONGO_URI).then(()=>{
+        console.log('db connected');
+    }).catch(console.log);
+mongoose.Promise = global.Promise;
 	console.log('Node.js listening on port ' + port + '...');
 });

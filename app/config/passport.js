@@ -5,19 +5,23 @@ var User = require('../models/users');
 var configAuth = require('./auth');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
+const passportJWT = require("passport-jwt");
+const JWTStrategy   = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
+
 module.exports = function (passport) {
-	passport.serializeUser(function (user, done) {
-        console.log('serializing');
-		done(null, user.id);
-	});
+	// passport.serializeUser(function (user, done) {
+    //     console.log('serializing');
+	// 	done(null, user.id);
+	// });
 
-	passport.deserializeUser(function (id, done) {
-        console.log('deserializing');
-
-		User.findById(id,{hashed_password:0,salt:0}, function (err, user) {
-			done(err, user);
-		});
-	});
+	// passport.deserializeUser(function (id, done) {
+    //     console.log('deserializing');
+    //     console.log('id inside deser '+id);
+	// 	User.findById(id,{hashed_password:0,salt:0}, function (err, user) {
+	// 		done(err, user);
+	// 	});
+	// });
 
 	// passport.use(new GitHubStrategy({
 	// 	clientID: configAuth.githubAuth.clientID,
@@ -65,13 +69,33 @@ module.exports = function (passport) {
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
-      if (validPassword(password,user)) {
+      if (!validPassword(password,user)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
       return done(null, user);
     });
   }
 ));
+passport.use(new JWTStrategy({
+    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+    secretOrKey   : process.env.JWT_KEY
+},
+function (jwtPayload, cb) {
+    console.log('inside jwt passport ');
+    console.log(jwtPayload);
+    //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
+    return User.findById(jwtPayload)
+        .then(user => {
+            return cb(null, user.id);
+        })
+        .catch(err => {
+            return cb(err);
+        });
+}
+));
+
+
+
 
 function validPassword(password, user){
     let temp = user.salt; 
@@ -79,7 +103,7 @@ function validPassword(password, user){
 			// let id = users[0].token; 
     let newpass = temp + password; 
     let hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
-    return hashed_password==password; 
+    return hashed_password==hash_db; 
 			//
 }
 
