@@ -72,7 +72,7 @@ module.exports = function (passport) {
       if (!validPassword(password,user)) {
         return done(null, false, { message: 'Incorrect password.' });
       }
-      return done(null, user);
+      return done(null, user.id);
     });
   }
 ));

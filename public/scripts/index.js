@@ -11,19 +11,24 @@ var signup_form = $('#signup-form');
 
 var baseURI = 'http://localhost:8080'; //TODO update baseURI
 
-var newPollContainer = $('#new-poll-container');
+var newPollContainer;
+var voteContainer;
+var changePassowrdContainer;
 var user = {};
 
 // if logged In
-if (sessionStorage.getItem('token')) {
+if (localStorage.getItem('token')) {
     $.ajax({
         type: "GET",
         url: '/',
         dataType: 'html',
         beforeSend: function (xhr) {   //Include the bearer token in header
-            xhr.setRequestHeader("Authorization", 'Bearer ' + sessionStorage.token);
+            xhr.setRequestHeader("Authorization", 'Bearer ' + localStorage.token);
         }
-    }).done(function (response) {
+    }).done(function (response, textStatus, jqXHR) {
+        console.log('done background');
+        console.log(textStatus);
+        console.log(jqXHR.getAllResponseHeaders());
         $('html').prop('innerHTML', response);
         getUserDetails();
 
@@ -37,6 +42,9 @@ if (sessionStorage.getItem('token')) {
 var getUserDetails = function () {
 
     var helloMessage = $('#nav-hello');
+    newPollContainer = $('#new-poll-container');
+    voteContainer = $('#vote-container');
+    changePassowrdContainer = $('#change-password-container');
 
     var logout = $('#nav-logout');
 
@@ -44,7 +52,7 @@ var getUserDetails = function () {
 
     // add functionality to logout button
     logout.on('click', () => {
-        sessionStorage.clear();
+        localStorage.clear();
         location.reload();
 
     });
@@ -55,13 +63,21 @@ var getUserDetails = function () {
         url: '/auth/user_details',
         dataType: 'html',
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", 'Bearer ' + sessionStorage.token);
+            xhr.setRequestHeader("Authorization", 'Bearer ' + localStorage.token);
         }
     }).done(function (response) {
         console.log(response);
         user = response;
         helloMessage.html('Hello ' + JSON.parse(response).name);
-        setUpNewPollContainer();
+
+        if (window.location.href.indexOf('?vote=') == -1) {
+
+            setUpNewPollContainer();
+        }
+        else {
+            var url = window.location.href;
+            setUpVotingContainer(url.split('=')[1].replace('#', ''));
+        }
     }).fail(function (err) {
         console.log(err);
     });
@@ -70,7 +86,66 @@ var getUserDetails = function () {
 
 
 }
+
+function setUpVotingContainer(pollId) {
+    hideAllContainers();
+    voteContainer.show();
+    var voteForm = $('#vote-form');
+    var voteQuestion = $('#vote-question');
+    var voteOptions = $('#vote-options');
+    makeAjaxCall('/poll', 'post', { poll_id: pollId }, (err, resp) => {
+        if (err) {
+            alert(err.statusText);
+        } else {
+            console.log(resp);
+            for (var i = 0; i < resp.options.length; i++) {
+                var opt = resp.options[i];
+                console.log(opt)
+                if (i != 0)
+                    voteOptions.append('<div type="radio"\><label\><input type="radio" name="optradio" value="' + i + '">' + '   ' + opt.option + '</label></div>');
+                else {
+                    voteOptions.append('<div type="radio"\><label\><input type="radio" name="optradio" checked="true" value="' + i + '">' + '   ' + '   ' + opt.option + '</label></div>');
+
+                }
+            }
+
+            voteForm.submit((e) => {
+                e.preventDefault();
+                var radioValue = $("#vote-options input[name='optradio']:checked").val();
+                console.log(radioValue + " " + pollId);
+
+
+                // var name_ = $('#name').val();
+                makeAjaxCall('/auth/vote', 'post', { poll_id: pollId, option: radioValue }, (err, response) => {
+                    if (err){
+                        alert(err.responseText);
+                        window.location.href = baseURI;
+                        setUpNewPollContainer();
+                    }
+                    else {
+                        alert('Voted!');
+                        window.location.href = baseURI;
+                        setUpNewPollContainer();
+                    }
+                })
+
+            });
+        }
+    })
+
+
+}
+
+
+function hideAllContainers() {
+    newPollContainer.hide();
+    voteContainer.hide();
+
+
+}
 function setUpNewPollContainer() {
+    hideAllContainers();
+    newPollContainer.show();
     var name = $('#name');
     var option_group = $('.option-group');
     var more_options = $('#more-options');
@@ -121,7 +196,7 @@ function setUpNewPollContainer() {
                 else {
                     alert("Poll posted successfully at " + baseURI + '/get_poll/?id=' + response.poll['_id']);
                     name.val('');
-                    $('.option').each(function(){
+                    $('.option').each(function () {
                         $(this).val('');
                     })
                 }
@@ -177,7 +252,7 @@ $(document).ready(function () {
     $.ajaxPrefilter(function (options) {
         if (options.beforeSend) {
             options.beforeSend = function (xhr) {
-                xhr.setRequestHeader('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+                xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
             }
         }
     });
@@ -187,8 +262,8 @@ $(document).ready(function () {
 
         $.post('/login', login_form.serialize(), (data) => {
             console.log(data);
-            sessionStorage.setItem('token', data.token);
-            location.reload();
+            localStorage.setItem('token', data.token);
+            window.location.href = baseURI;
         })
     });
     signup_form.submit((e) => {
@@ -196,10 +271,10 @@ $(document).ready(function () {
 
         $.post('/signup', signup_form.serialize(), (data) => {
             console.log(data);
-            sessionStorage.clear();
-            sessionStorage.setItem('token', data.token);
+            localStorage.clear();
+            localStorage.setItem('token', data.token);
             console.log(data.token);
-            location.reload();
+            window.location.href = baseURI;
         })
     });
 
@@ -221,7 +296,7 @@ var makeAjaxCall = (url, method, data2, callback) => {
         url: url,
         data: data2,
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", 'Bearer ' + sessionStorage.token);
+            xhr.setRequestHeader("Authorization", 'Bearer ' + localStorage.token);
         }
     }).done(function (response) {
         callback(null, response);

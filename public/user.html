@@ -47,8 +47,28 @@
 
         <!-- new poll -->
         <div class="container" id='new-poll-container'>
-        <h3>New Poll</h3>
-        <form id="new-poll-form" >
+            <h3>New Poll</h3>
+            <form id="new-poll-form">
+
+                <div class="form-group">
+                    <label for="name">Question</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+                <div class="form-group option-group">
+                    <label for="pwd">Options:</label>
+                    <input type="text" class="form-control option" placeholder="Option A">
+                    <input type="text" class="form-control option" placeholder="Option B">
+                </div>
+                <button type="button" id="more-options" class="btn btn-default">More Options</button>
+                <button type="submit" id="submit" class="btn btn-primary btn-default">Submit</button>
+
+            </form>
+        </div>
+
+        <!-- new poll -->
+        <div class="container" id='vote-container'>
+
+            <!-- <form id="new-poll-form" >
 
             <div class="form-group">
                 <label for="name">Name your Poll</label>
@@ -62,8 +82,26 @@
             <button type="button" id="more-options" class="btn btn-default">More Options</button>
             <button type="submit" id="submit" class="btn btn-primary btn-default">Submit</button>
 
-        </form>
-    </div>
+            </form> -->
+            <h3 id="vote-question">Who is the blah of blah when blah was blah</h3>
+            <br>
+            <form id="vote-form">
+                <div id="vote-options">
+                    <!-- <div class="radio">
+                        <label>
+                            <input type="radio" name="optradio">Option 1</label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="optradio">Option 2</label>
+                    </div> -->
+                </div>
+                <br>
+                <button type="submit" id="vote" class="btn btn-primary btn-default">Vote</button>
+
+            </form>
+
+        </div>
 
 
         <footer class="footer">

@@ -8,7 +8,8 @@ var Poll = new Schema({
     options: [{
         option : String,
         score : Number
-         }]
+         }],
+    voters : {type:[String]}  
     
 });
 

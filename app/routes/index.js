@@ -8,29 +8,28 @@ const url = require('url');
 var PollHandler = require('../handlers/pollHandler.server');
 module.exports = function (app, passport) {
 
-    function isLoggedIn(req, res, next) {
-        if (req.isAuthenticated()) {
-            next();
-        } else {
-            res.redirect('/');
-        }
-    }
+ 
 
     var clickHandler = new ClickHandler(passport);
     var userHandler = new UserHandler(passport);
     var pollHandler = new PollHandler();
 
-    app.use('/auth',passport.authenticate('jwt',{session:false,
-    failureRedirect:'/'}));
+    // app.use('/auth',passport.authenticate('jwt',{session:false,
+    // failureRedirect:'/'}));
 
     app.get('/', function(req, res, next) {
         passport.authenticate('jwt',{session:false}, function(err, user, info) {
         console.log(err+'--'+user+'--'+info);
           if (err) { return next(err); }
           if (!user) { 
-            return res.sendFile(path + '/public/index.html'); }
+            return res.status('400').sendFile(path + '/public/index.html'); }
         else{
-            return res.sendFile(path + '/public/user.html')
+            if(req.query.vote){
+            return res.sendFile(path + '/public/user.html',{headers:{openVote:true}})
+            }else{
+
+                return res.sendFile(path + '/public/user.html')
+            }
             // res.render('/public/user.html');
         }
         })(req, res, next);
@@ -53,7 +52,7 @@ module.exports = function (app, passport) {
     app.post('/login',
     passport.authenticate('local', { session: false }),
     function(req, res) {
-        const token = jwt.sign(req.user.id, process.env.JWT_KEY);
+        const token = jwt.sign(req.user, process.env.JWT_KEY);
         if(!req.user)
         res.send(err);
         console.log(token);
@@ -87,31 +86,43 @@ module.exports = function (app, passport) {
         // console.log(req.user);
         // userHandler.getUserById(req,res);
         pollHandler.addPoll(req,res);
+    });
+
+    app.post('/poll',(req,res)=>{
+        if(!req.body.poll_id)
+        return res.status(400).send('no poll_id');
+        pollHandler.getPollById(req,res);
+        
+    });
+    app.post('/auth/vote',passport.authenticate('jwt',{session:false}),(req,res)=>{
+        if(!req.body.poll_id||!req.body.option)
+            res.status(400).send('invalid request');
+        pollHandler.update(req,res);
     })
 
 
 
-    app.route('/profile')
-        .get(isLoggedIn, function (req, res) {
-            res.sendFile(path + '/public/profile.html');
-        });
+    // app.route('/profile')
+    //     .get(isLoggedIn, function (req, res) {
+    //         res.sendFile(path + '/public/profile.html');
+    //     });
 
-    app.route('/api/:id')
-        .get(isLoggedIn, function (req, res) {
-            res.json(req.user.github);
-        });
+    // app.route('/api/:id')
+    //     .get(isLoggedIn, function (req, res) {
+    //         res.json(req.user.github);
+    //     });
 
-    app.route('/auth/github')
-        .get(passport.authenticate('github'));
+    // app.route('/auth/github')
+    //     .get(passport.authenticate('github'));
 
-    app.route('/auth/github/callback')
-        .get(passport.authenticate('github', {
-            successRedirect: '/',
-            failureRedirect: '/login'
-        }));
+    // app.route('/auth/github/callback')
+    //     .get(passport.authenticate('github', {
+    //         successRedirect: '/',
+    //         failureRedirect: '/login'
+    //     }));
 
-    app.route('/api/:id/clicks')
-        .get(isLoggedIn, clickHandler.getClicks)
-        .post(isLoggedIn, clickHandler.addClick)
-        .delete(isLoggedIn, clickHandler.resetClicks);
+    // app.route('/api/:id/clicks')
+    //     .get(isLoggedIn, clickHandler.getClicks)
+    //     .post(isLoggedIn, clickHandler.addClick)
+    //     .delete(isLoggedIn, clickHandler.resetClicks);
 };
