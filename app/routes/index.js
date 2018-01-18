@@ -1,7 +1,6 @@
 'use strict';
 
 var path = process.cwd();
-var ClickHandler = require(path + '/app/handlers/clickHandler.server.js');
 var UserHandler = require('../handlers/userHandler.server');
 const jwt = require('jsonwebtoken');
 const url = require('url');
@@ -10,7 +9,6 @@ module.exports = function (app, passport) {
 
  
 
-    var clickHandler = new ClickHandler(passport);
     var userHandler = new UserHandler(passport);
     var pollHandler = new PollHandler();
 

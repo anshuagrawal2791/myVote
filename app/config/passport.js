@@ -2,7 +2,6 @@
 
 var GitHubStrategy = require('passport-github').Strategy;
 var User = require('../models/users');
-var configAuth = require('./auth');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
 const passportJWT = require("passport-jwt");

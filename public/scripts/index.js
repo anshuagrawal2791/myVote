@@ -18,6 +18,7 @@ var voteContainer;
 var changePassowrdContainer;
 var myPollsContainer;
 var user = {};
+var chartContainer;
 
 // user logged in elements
 
@@ -25,6 +26,8 @@ var newPollButton;
 var myPollsButton;
 var changePasswordButton;
 var logoutButton;
+
+
 
 
 // if logged In
@@ -57,6 +60,7 @@ var getUserDetails = function () {
     voteContainer = $('#vote-container');
     changePassowrdContainer = $('#change-password-container');
     myPollsContainer = $('#my-polls-container');
+    chartContainer = $('#chart-container');
 
     newPollButton = $('#new-poll');
     myPollsButton = $('#my-polls');
@@ -66,22 +70,22 @@ var getUserDetails = function () {
 
 
     // add functionality to logout button
-    logoutButton.on('click', () => {
+    logoutButton.unbind().on('click', () => {
         localStorage.clear();
         window.location.href = baseURI;
 
     });
 
-    newPollButton.on('click', () => {
+    newPollButton.unbind().on('click', () => {
         setUpNewPollContainer();
     });
 
-    myPollsButton.on('click', () => {
+    myPollsButton.unbind().on('click', () => {
 
         setUpMyPollContainer();
     })
 
-    changePasswordButton.on('click', () => {
+    changePasswordButton.unbind().on('click', () => {
         setUpChangePasswordContainer();
     })
 
@@ -127,6 +131,7 @@ function setUpChangePasswordContainer() {
     var saveChanges = $('#save-changes');
 
     var filled = true;
+    changePasswordForm.off('submit');
     changePasswordForm.on('submit', (e) => {
         e.preventDefault();
         if (newPassword.val() == '' || currentPassword.val() == '')
@@ -152,17 +157,86 @@ function setUpMyPollContainer() {
     hideAllContainers();
     myPollsContainer.show();
 
+
     var myPollList = $('#my-polls-list');
+    myPollList.html('');
     makeAjaxCall('/auth/user/polls', 'get', {}, (err, resp) => {
         if (err) {
             alert(err.statusText);
         } else {
-            console.log(resp);
+            // console.log(resp);
             for (var i = 0; i < resp.length; i++) {
-                myPollList.append('<a href="#" class="list-group-item"><h4 class="list-group-item-heading">' + resp[i].name + '</h4><p class="list-group-item-text">' + baseURI + '/?vote=' + resp[i]._id + '</p></a>')
+                myPollList.append('<a href="#" class="list-group-item my-polls id="'+resp[i]._id+'"><h4 class="list-group-item-heading">' + resp[i].name + '</h4><p class="list-group-item-text">' + baseURI + '/?vote=' + resp[i]._id + '</p></a>')
+            }
+
+            var myPolls = $('.my-polls');
+            myPolls.off('click');
+            myPolls.on('click',function(e){
+                e.preventDefault();
+                setUpChartContainer(resp[myPolls.index(this)]._id);
+            })
+
+
+        }
+    });
+
+
+}
+function setUpChartContainer(pollId){
+    hideAllContainers();
+    chartContainer.show();
+    // var chart= $('#chart');
+    makeAjaxCall('/poll', 'post', { poll_id: pollId }, (err, resp)=>{
+        if (err) {
+            alert(err.statusText);
+        } else {
+            console.log(resp);
+            chartContainer.html('');
+            chartContainer.append('<h3>'+resp.name+'</h3><br>')
+            chartContainer.append('<canvas id="chart" width="400" height="400"></canvas>');
+            plot(resp.options,$('#chart'));
+        }
+    });
+    
+}
+
+function plot(data,chart){
+
+    var plotData = {};
+    var labels=[];
+    var dataPoints=[];
+    var backgroundColors=[];
+    var borderColors=[];
+    for(var i=0;i<data.length;i++){
+        var cur = data[i];
+        labels.push(cur.option);
+        dataPoints.push(cur.score);
+        var color = generateRandomColor();
+        backgroundColors.push('rgba('+color+',0.2)');
+        borderColors.push('rgba('+color+',1)');
+    }
+    plotData.labels=labels;
+    plotData.datasets=[];
+    var dataSet = {};
+    dataSet.label='# of Votes';
+    dataSet.data=dataPoints;
+    dataSet.backgroundColor=backgroundColors;
+    dataSet.borderColor=borderColors;
+    dataSet.borderWidth=1;
+    plotData.datasets.push(dataSet);
+    var myChart = new Chart($('#chart'), {
+        type: 'bar',
+        data: plotData,
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    }
+                }]
             }
         }
-    })
+    });
 }
 
 function setUpVotingContainer(pollId) {
@@ -176,6 +250,7 @@ function setUpVotingContainer(pollId) {
             alert(err.statusText);
         } else {
             console.log(resp);
+            voteQuestion.html(resp.name);
             for (var i = 0; i < resp.options.length; i++) {
                 var opt = resp.options[i];
                 console.log(opt)
@@ -197,13 +272,13 @@ function setUpVotingContainer(pollId) {
                 makeAjaxCall('/auth/vote', 'post', { poll_id: pollId, option: radioValue }, (err, response) => {
                     if (err) {
                         alert(err.responseText);
-                        window.location.href = baseURI;
-                        setUpNewPollContainer();
+                        // window.location.href = baseURI;
+                        setUpChartContainer(pollId)
                     }
                     else {
                         alert('Voted!');
-                        window.location.href = baseURI;
-                        setUpNewPollContainer();
+                        // window.location.href = baseURI;
+                        setUpChartContainer(pollId);
                     }
                 })
 
@@ -220,6 +295,7 @@ function hideAllContainers() {
     voteContainer.hide();
     changePassowrdContainer.hide();
     myPollsContainer.hide();
+    chartContainer.hide();
 
 
 }
@@ -248,8 +324,8 @@ function setUpNewPollContainer() {
         else
             submit.prop('disabled', true);
     });
-
-    new_poll_form.submit((e) => {
+    new_poll_form.off('submit');
+    new_poll_form.on('submit',function(e){
         e.preventDefault();
 
         var name_ = $('#name').val();
@@ -392,5 +468,7 @@ var checkIfFilledOptions = function () {
     return (filled && ('#name').valueOf());
 
 }
-
+var generateRandomColor = function(){
+    return  (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256));
+}
 
