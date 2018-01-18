@@ -8,6 +8,8 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 
 var app = express();
+var server = require('http').Server(app);
+const io = require('socket.io')(server);
 require('dotenv').load();
 require('./app/config/passport.js')(passport);
 
@@ -19,20 +21,24 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.use('/common', express.static(process.cwd() + '/app/common'));
 app.use(bodyParser.urlencoded({extended:false}));
 app.set('view engine','ejs');
-app.use(session({
-	secret: 'secretClementine',
-	resave: false,
-	saveUninitialized: true
-}));
 
 app.use(passport.initialize());
 app.use(passport.session());
+// app.io = io;
 
-routes(app, passport);
 
 // auth_routes(app,passport);
 
 var port = process.env.PORT || 3000;
-app.listen(port,  function () {
+server.listen(port,  function () {
 	console.log('Node.js listening on port ' + port + '...');
+});
+routes(app, passport,io);
+io.on('connection',function(socket){
+	
+	socket.emit('greeting',{hi:'name'});
+	// socket.on('')
+	console.log('------------------- io connected');
+
+	socket.on("disconnect", () => console.log("Client disconnected"));
 });

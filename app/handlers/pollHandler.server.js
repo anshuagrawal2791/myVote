@@ -43,7 +43,8 @@ function PollHandler() {
             res.status(200).json(poll);
         });
     }
-    this.update = (req, res) => {
+
+    this.update = (req, res,socket) => {
         Polls.findById(req.body.poll_id, (err, poll) => {
             if (err)
                 return res.status(400).send(err);
@@ -58,10 +59,10 @@ function PollHandler() {
             var voters = poll.voters;
             voters.push(req.user);
             poll.voters = voters;
-            console.log(poll);
             poll.save((err) => {
                 if (err)
                     return res.status(400).send(err);
+                socket.sockets.emit('vote',poll);
                 res.status(200).json(poll);
             })
 

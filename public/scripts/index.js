@@ -9,7 +9,7 @@ var signup_container = $('#signup-container');
 var login_form = $('#login-form');
 var signup_form = $('#signup-form');
 
-var baseURI = 'http://localhost:8080'; //TODO update baseURI
+var baseURI = 'http://localhost:8080'; //TODO update this
 
 
 // user logged in containers
@@ -26,6 +26,10 @@ var newPollButton;
 var myPollsButton;
 var changePasswordButton;
 var logoutButton;
+
+
+
+
 
 
 
@@ -54,6 +58,9 @@ if (localStorage.getItem('token')) {
 
 // Authenticated User
 var getUserDetails = function () {
+
+    // var socket = io.connect(baseURI);
+    
 
     var helloMessage = $('#nav-hello');
     newPollContainer = $('#new-poll-container');
@@ -197,6 +204,15 @@ function setUpChartContainer(pollId){
             plot(resp.options,$('#chart'));
         }
     });
+
+    var socket = io.connect(baseURI);
+    socket.on('vote',function(resp){
+        console.log(resp);
+            chartContainer.html('');
+            chartContainer.append('<h3>'+resp.name+'</h3><br>')
+            chartContainer.append('<canvas id="chart" width="400" height="400"></canvas>');
+            plot(resp.options,$('#chart'));
+    });
     
 }
 
@@ -317,6 +333,7 @@ function setUpNewPollContainer() {
             submit.prop('disabled', true);
     });
 
+    more_options.off('click');
     more_options.on('click', function () {
         option_group.append('<input type="text" class="form-control option" placeholder="Option " \>')
         if (checkIfFilledOptions())
@@ -324,6 +341,7 @@ function setUpNewPollContainer() {
         else
             submit.prop('disabled', true);
     });
+
     new_poll_form.off('submit');
     new_poll_form.on('submit',function(e){
         e.preventDefault();
@@ -471,4 +489,6 @@ var checkIfFilledOptions = function () {
 var generateRandomColor = function(){
     return  (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256));
 }
+
+
 

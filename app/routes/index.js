@@ -5,7 +5,7 @@ var UserHandler = require('../handlers/userHandler.server');
 const jwt = require('jsonwebtoken');
 const url = require('url');
 var PollHandler = require('../handlers/pollHandler.server');
-module.exports = function (app, passport) {
+module.exports = function (app, passport,io) {
 
  
 
@@ -95,7 +95,7 @@ module.exports = function (app, passport) {
     app.post('/auth/vote',passport.authenticate('jwt',{session:false}),(req,res)=>{
         if(!req.body.poll_id||!req.body.option)
             res.status(400).send('invalid request');
-        pollHandler.update(req,res);
+        pollHandler.update(req,res,io);
     })
 
     app.get('/auth/user/polls',passport.authenticate('jwt',{session:false}),(req,res)=>{
