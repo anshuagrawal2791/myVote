@@ -2,6 +2,7 @@
 
 var express = require('express');
 var routes = require('./app/routes/index.js');
+var auth_routes = require('./app/routes/auth.js');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session = require('express-session');
@@ -30,12 +31,9 @@ app.use(passport.session());
 
 routes(app, passport);
 
+// auth_routes(app,passport);
 
 var port = process.env.PORT || 3000;
 app.listen(port,  function () {
-    mongoose.connect(process.env.MONGO_URI).then(()=>{
-        console.log('db connected');
-    }).catch(console.log);
-mongoose.Promise = global.Promise;
 	console.log('Node.js listening on port ' + port + '...');
 });

@@ -11,10 +11,21 @@ var signup_form = $('#signup-form');
 
 var baseURI = 'http://localhost:8080'; //TODO update baseURI
 
+
+// user logged in containers
 var newPollContainer;
 var voteContainer;
 var changePassowrdContainer;
+var myPollsContainer;
 var user = {};
+
+// user logged in elements
+
+var newPollButton;
+var myPollsButton;
+var changePasswordButton;
+var logoutButton;
+
 
 // if logged In
 if (localStorage.getItem('token')) {
@@ -45,17 +56,36 @@ var getUserDetails = function () {
     newPollContainer = $('#new-poll-container');
     voteContainer = $('#vote-container');
     changePassowrdContainer = $('#change-password-container');
+    myPollsContainer = $('#my-polls-container');
 
-    var logout = $('#nav-logout');
+    newPollButton = $('#new-poll');
+    myPollsButton = $('#my-polls');
+    changePasswordButton = $('#nav-settings');
+    logoutButton = $('#nav-logout');
 
 
 
     // add functionality to logout button
-    logout.on('click', () => {
+    logoutButton.on('click', () => {
         localStorage.clear();
-        location.reload();
+        window.location.href = baseURI;
 
     });
+
+    newPollButton.on('click', () => {
+        setUpNewPollContainer();
+    });
+
+    myPollsButton.on('click', () => {
+
+        setUpMyPollContainer();
+    })
+
+    changePasswordButton.on('click', () => {
+        setUpChangePasswordContainer();
+    })
+
+
 
     // Get details of signed in user
     $.ajax({
@@ -82,9 +112,57 @@ var getUserDetails = function () {
         console.log(err);
     });
 
-    //  enabling and disabling submit button
 
 
+
+}
+
+
+function setUpChangePasswordContainer() {
+    hideAllContainers();
+    changePassowrdContainer.show();
+    var changePasswordForm = $('#change-password-form');
+    var currentPassword = $('#current-password');
+    var newPassword = $('#new-password');
+    var saveChanges = $('#save-changes');
+
+    var filled = true;
+    changePasswordForm.on('submit', (e) => {
+        e.preventDefault();
+        if (newPassword.val() == '' || currentPassword.val() == '')
+            alert('Fill all the fields');
+        else {
+            makeAjaxCall('/auth/user/change_password', 'post', {current_password:currentPassword.val(),new_password:newPassword.val()},(err,resp)=>{
+                if(err)
+                alert(err.textStatus);
+                else{
+                    alert(resp);
+                    window.location.href = baseURI;
+                    setUpNewPollContainer();
+                }
+            })
+        }
+    })
+
+
+
+}
+
+function setUpMyPollContainer() {
+    hideAllContainers();
+    myPollsContainer.show();
+
+    var myPollList = $('#my-polls-list');
+    makeAjaxCall('/auth/user/polls', 'get', {}, (err, resp) => {
+        if (err) {
+            alert(err.statusText);
+        } else {
+            console.log(resp);
+            for (var i = 0; i < resp.length; i++) {
+                myPollList.append('<a href="#" class="list-group-item"><h4 class="list-group-item-heading">' + resp[i].name + '</h4><p class="list-group-item-text">' + baseURI + '/?vote=' + resp[i]._id + '</p></a>')
+            }
+        }
+    })
 }
 
 function setUpVotingContainer(pollId) {
@@ -117,7 +195,7 @@ function setUpVotingContainer(pollId) {
 
                 // var name_ = $('#name').val();
                 makeAjaxCall('/auth/vote', 'post', { poll_id: pollId, option: radioValue }, (err, response) => {
-                    if (err){
+                    if (err) {
                         alert(err.responseText);
                         window.location.href = baseURI;
                         setUpNewPollContainer();
@@ -140,6 +218,8 @@ function setUpVotingContainer(pollId) {
 function hideAllContainers() {
     newPollContainer.hide();
     voteContainer.hide();
+    changePassowrdContainer.hide();
+    myPollsContainer.hide();
 
 
 }
@@ -194,7 +274,7 @@ function setUpNewPollContainer() {
                 if (err)
                     alert("error");
                 else {
-                    alert("Poll posted successfully at " + baseURI + '/get_poll/?id=' + response.poll['_id']);
+                    alert("Poll posted successfully at " + baseURI + '/?vote=' + response.poll['_id']);
                     name.val('');
                     $('.option').each(function () {
                         $(this).val('');
@@ -283,14 +363,12 @@ $(document).ready(function () {
 
 })
 var setSelected = (e) => {
-    console.log('setSelected called');
     this.childNodes[0].html('<span class="sr-only">(current)');
 
 }
 
 var makeAjaxCall = (url, method, data2, callback) => {
-    // console.log('data2');
-    // console.log(typeof data2);
+
     $.ajax({
         type: method,
         url: url,

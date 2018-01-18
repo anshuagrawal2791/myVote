@@ -100,7 +100,15 @@ module.exports = function (app, passport) {
         pollHandler.update(req,res);
     })
 
+    app.get('/auth/user/polls',passport.authenticate('jwt',{session:false}),(req,res)=>{
+        userHandler.getPolls(req,res);
+    });
 
+    app.post('/auth/user/change_password',passport.authenticate('jwt',{session:false}),(req,res)=>{
+        if(!req.body.current_password||!req.body.new_password)
+        return res.status(400).send('Fill all the details');
+        userHandler.changePassword(req,res);
+    }); 
 
     // app.route('/profile')
     //     .get(isLoggedIn, function (req, res) {
