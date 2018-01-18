@@ -13,11 +13,31 @@ $ clone the repository
 $ npm install
 $ cp .env.template .env
 # populate .env with the appropriate values
+# Update baseUri in public/scripts/index.js
 $ npm install  # to install dependencies
 $ node server.js
 ```
 
 You need to have MongoDB, Node.js and npm installed.
+
+
+## Sample Images
+
+### Home
+<img src="https://github.com/anshuagrawal2791/myVote/blob/master/screenshots/1.jpg" width="700">
+
+### Create Poll
+<img src="https://github.com/anshuagrawal2791/myVote/blob/master/screenshots/2.jpg" width="700">
+
+### View Your Polls (`share the url with your audience`)
+<img src="https://github.com/anshuagrawal2791/myVote/blob/master/screenshots/3.jpg" width="700">
+
+### User2 can cast Vote  
+<img src="https://github.com/anshuagrawal2791/myVote/blob/master/screenshots/4.jpg" width="700">
+
+### Real-time Result Plotting
+<img src="https://github.com/anshuagrawal2791/myVote/blob/master/screenshots/5.jpg" width="700">
+
 
 ## Contribution
 
