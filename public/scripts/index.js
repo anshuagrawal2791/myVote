@@ -53,13 +53,13 @@ if (localStorage.getItem('token')) {
     }).fail(function (err) {
         //Error during request
         console.log(err);
+        alert(err);
     });
 }
 
 // Authenticated User
 var getUserDetails = function () {
 
-    // var socket = io.connect(baseURI);
     
 
     var helloMessage = $('#nav-hello');
@@ -171,7 +171,6 @@ function setUpMyPollContainer() {
         if (err) {
             alert(err.statusText);
         } else {
-            // console.log(resp);
             for (var i = 0; i < resp.length; i++) {
                 myPollList.append('<a href="#" class="list-group-item my-polls id="'+resp[i]._id+'"><h4 class="list-group-item-heading">' + resp[i].name + '</h4><p class="list-group-item-text">' + baseURI + '/?vote=' + resp[i]._id + '</p></a>')
             }
@@ -192,12 +191,10 @@ function setUpMyPollContainer() {
 function setUpChartContainer(pollId){
     hideAllContainers();
     chartContainer.show();
-    // var chart= $('#chart');
     makeAjaxCall('/poll', 'post', { poll_id: pollId }, (err, resp)=>{
         if (err) {
             alert(err.statusText);
         } else {
-            console.log(resp);
             chartContainer.html('');
             chartContainer.append('<h3>'+resp.name+'</h3><br>')
             chartContainer.append('<canvas id="chart" width="400" height="400"></canvas>');
@@ -205,9 +202,9 @@ function setUpChartContainer(pollId){
         }
     });
 
+    // real time results through socket connection
     var socket = io.connect(baseURI);
     socket.on('vote',function(resp){
-        console.log(resp);
             chartContainer.html('');
             chartContainer.append('<h3>'+resp.name+'</h3><br>')
             chartContainer.append('<canvas id="chart" width="400" height="400"></canvas>');
@@ -265,11 +262,9 @@ function setUpVotingContainer(pollId) {
         if (err) {
             alert(err.statusText);
         } else {
-            console.log(resp);
             voteQuestion.html(resp.name);
             for (var i = 0; i < resp.options.length; i++) {
                 var opt = resp.options[i];
-                console.log(opt)
                 if (i != 0)
                     voteOptions.append('<div type="radio"\><label\><input type="radio" name="optradio" value="' + i + '">' + '   ' + opt.option + '</label></div>');
                 else {
@@ -281,19 +276,13 @@ function setUpVotingContainer(pollId) {
             voteForm.submit((e) => {
                 e.preventDefault();
                 var radioValue = $("#vote-options input[name='optradio']:checked").val();
-                console.log(radioValue + " " + pollId);
-
-
-                // var name_ = $('#name').val();
                 makeAjaxCall('/auth/vote', 'post', { poll_id: pollId, option: radioValue }, (err, response) => {
                     if (err) {
                         alert(err.responseText);
-                        // window.location.href = baseURI;
                         setUpChartContainer(pollId)
                     }
                     else {
                         alert('Voted!');
-                        // window.location.href = baseURI;
                         setUpChartContainer(pollId);
                     }
                 })

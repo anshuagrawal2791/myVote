@@ -12,9 +12,8 @@ module.exports = function (app, passport,io) {
     var userHandler = new UserHandler(passport);
     var pollHandler = new PollHandler();
 
-    // app.use('/auth',passport.authenticate('jwt',{session:false,
-    // failureRedirect:'/'}));
 
+    //  HOME - redirects to login if not logged in
     app.get('/', function(req, res, next) {
         passport.authenticate('jwt',{session:false}, function(err, user, info) {
         console.log(err+'--'+user+'--'+info);
@@ -28,7 +27,6 @@ module.exports = function (app, passport,io) {
 
                 return res.sendFile(path + '/public/user.html')
             }
-            // res.render('/public/user.html');
         }
         })(req, res, next);
     });
@@ -52,15 +50,13 @@ module.exports = function (app, passport,io) {
     function(req, res) {
         const token = jwt.sign(req.user, process.env.JWT_KEY);
         if(!req.user)
-        res.send(err);
-        console.log(token);
+        return res.send(err);
         res.json({'token':token});
     });
 
 
     app.route('/logout')
         .get(function (req, res) {
-            // req.logout();
             res.redirect('/');
         });
 
@@ -74,15 +70,10 @@ module.exports = function (app, passport,io) {
         });
 
     app.get('/auth/user_details', passport.authenticate('jwt',{session:false}) ,(req, res) => {
-        console.log('user inside user details');
-        console.log(req.user);
         userHandler.getUserById(req,res);
     })
 
     app.post('/auth/new_poll', passport.authenticate('jwt',{session:false}) ,(req, res) => {
-        console.log('user inside new_poll');
-        // console.log(req.user);
-        // userHandler.getUserById(req,res);
         pollHandler.addPoll(req,res);
     });
 
@@ -106,29 +97,5 @@ module.exports = function (app, passport,io) {
         if(!req.body.current_password||!req.body.new_password)
         return res.status(400).send('Fill all the details');
         userHandler.changePassword(req,res);
-    }); 
-
-    // app.route('/profile')
-    //     .get(isLoggedIn, function (req, res) {
-    //         res.sendFile(path + '/public/profile.html');
-    //     });
-
-    // app.route('/api/:id')
-    //     .get(isLoggedIn, function (req, res) {
-    //         res.json(req.user.github);
-    //     });
-
-    // app.route('/auth/github')
-    //     .get(passport.authenticate('github'));
-
-    // app.route('/auth/github/callback')
-    //     .get(passport.authenticate('github', {
-    //         successRedirect: '/',
-    //         failureRedirect: '/login'
-    //     }));
-
-    // app.route('/api/:id/clicks')
-    //     .get(isLoggedIn, clickHandler.getClicks)
-    //     .post(isLoggedIn, clickHandler.addClick)
-    //     .delete(isLoggedIn, clickHandler.resetClicks);
+    });
 };

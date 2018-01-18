@@ -24,10 +24,8 @@ app.set('view engine','ejs');
 
 app.use(passport.initialize());
 app.use(passport.session());
-// app.io = io;
 
 
-// auth_routes(app,passport);
 
 var port = process.env.PORT || 3000;
 server.listen(port,  function () {
@@ -37,7 +35,6 @@ routes(app, passport,io);
 io.on('connection',function(socket){
 	
 	socket.emit('greeting',{hi:'name'});
-	// socket.on('')
 	console.log('------------------- io connected');
 
 	socket.on("disconnect", () => console.log("Client disconnected"));

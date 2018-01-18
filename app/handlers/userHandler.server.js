@@ -13,35 +13,30 @@ function UserHandler(passport) {
 			.findOne({ 'email': req.user.email }, { '_id': false })
 			.exec(function (err, result) {
 				if (err) { throw err; }
-
 				res.json(result);
 			});
 	};
 
 	this.getUserById = function (req, res) {
 		Users
-			.findById(req.user, { '_id': false, password: 0, hashed_password: 0 })
+			.findById(req.user, { '_id': false, password: 0, hashed_password: 0,polls:0, salt:0})
 			.exec(function (err, result) {
 				if (err) { throw err; }
-
 				res.json(result);
 			});
 	};
 
+	// user signup
 	this.addUser = function (req, res) {
-		console.log(req.body);
 		let temp = rand(160, 36);
 		let newpass = temp + req.body.password;
 		let hashed_password = crypto.createHash('sha512').update(newpass).digest("hex");
-
 		var newUser = new Users({
-
 			email: req.body.email,
 			hashed_password: hashed_password,
 			salt: temp,
 			name: req.body.name
 		});
-
 		Users.findOne({ email: newUser.email }, (err, user) => {
 			if (err) {
 				throw err;
@@ -53,13 +48,13 @@ function UserHandler(passport) {
 					if (err)
 						throw err;
 					const token = jwt.sign(newUser.id, process.env.JWT_KEY);
-					console.log('created user' + newUser.toString() + ' with token ' + token);
 					res.json({ 'token': token });
 
 				});
 			}
 		})
 	};
+
 	this.getPolls = function (req, res) {
 		Users.findById(req.user, (err, user) => {
 			if (err)
@@ -75,11 +70,9 @@ function UserHandler(passport) {
 	}
 
 	this.changePassword = function (req,res){
-		// console.log(req.user);
 		Users.findById(req.user,(err,user)=>{
 			if(err)
 			return res.status(400).send(err);
-			// console.log(user)
 			if(!validPassword(req.body.current_password,user)){
 				return res.status(400).send('Invalid Current Password');
 			}

@@ -8,6 +8,8 @@
     <title>Voting App</title>
 
     <!-- Bootstrap core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
@@ -31,14 +33,15 @@
                     </li>
                 </ul>
             </nav>
-            <h3 class="text-muted">Voting App</h3>
+            <h3 class="text-muted">MyVote</h3>
         </div>
 
 
         <div class="jumbotron">
-            <h1 class="display-3">Jumbotron heading</h1>
-            <p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor
-                mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+            <h1 class="display-3">MyVote</h1>
+            <p class="lead">MyVote is a web-based application that enables you to create ranking, rating, and poll voting contests and view
+                the results in real time. Your audience can participate live on their mobile phones, tablets and desktops.
+                There is nothing to download or install.</p>
             <a class="btn btn-md btn-success" id="new-poll" href="#" role="button">New Poll</a>
             <a class="btn btn-md btn-info" id="my-polls" href="#" role="button">My Polls</a>
 
@@ -71,14 +74,7 @@
             <br>
             <form id="vote-form">
                 <div id="vote-options">
-                    <!-- <div class="radio">
-                        <label>
-                            <input type="radio" name="optradio">Option 1</label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optradio">Option 2</label>
-                    </div> -->
+
                 </div>
                 <br>
                 <button type="submit" id="vote" class="btn btn-primary btn-default">Vote</button>
@@ -90,18 +86,7 @@
 
         <div class="container" id="my-polls-container">
             <div class="list-group" id="my-polls-list">
-                <!-- <a href="#" class="list-group-item active">
-                  <h4 class="list-group-item-heading">First List Group Item Heading</h4>
-                  <p class="list-group-item-text">List Group Item Text</p>
-                </a>
-                <a href="#" class="list-group-item">
-                  <h4 class="list-group-item-heading">Second List Group Item Heading</h4>
-                  <p class="list-group-item-text">List Group Item Text</p>
-                </a>
-                <a href="#" class="list-group-item">
-                  <h4 class="list-group-item-heading">Third List Group Item Heading</h4>
-                  <p class="list-group-item-text">List Group Item Text</p>
-                </a> -->
+
             </div>
         </div>
 
@@ -124,14 +109,34 @@
 
         <div class="container" id="chart-container">
         </div>
-    
 
 
 
 
-    <footer class="footer">
-        <p>&copy; Company 2017</p>
-    </footer>
+        <div class="text-center center-block" style="margin-top:100px;">
+                <footer class="footer center-block">
+        
+                    <p>Copyright &copy; Anshuman Agrawal 2018<p>
+                    <hr>
+                    <div class="text-center center-block">
+                        <p class="txt-railway">- anshuagrawal2791.github.io -</p>
+                        <br />
+                        <a href="https://www.facebook.com/anshuagrawal2791" target="_blank">
+                            <i id="social-fb" class="fa fa-facebook-square fa-2x social" ></i>
+                        </a>
+                        <a href="https://github.com/anshuagrawal2791" target="_blank">
+                            <i id="social-tw" class="fa fa-github-square fa-2x social"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/anshuman-agrawal-56a12580/" target="_blank">
+                            <i id="social-gp" class="fa fa-linkedin-square fa-2x social"></i>
+                        </a>
+                        <a href="mailto:anshuagrawal2791@gmail.com" target="_blank">
+                            <i id="social-em" class="fa fa-envelope-square fa-2x social"></i>
+                        </a>
+                    </div>
+                    <hr>
+                </footer>
+            </div>
 
     </div>
     <!-- /container -->
@@ -144,6 +149,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js" type="text/javascript"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js" type="text/javascript"></script>
+
     <script src="/socket.io/socket.io.js"></script>
-    <script src="public/scripts/user.js"></script>
 </body>

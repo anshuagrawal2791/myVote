@@ -8,16 +8,7 @@ var User = new Schema({
     hashed_password: String,
     salt:String,
     name:String,
-    polls:{type:[String]},
-	github: {
-		id: String,
-		displayName: String,
-		username: String,
-      publicRepos: Number
-	},
-   nbrClicks: {
-      clicks: Number
-   }
+    polls:{type:[String]}
 });
 
 module.exports = mongoose.model('User', User);
