@@ -10,7 +10,6 @@ To run this locally:
 
 ```sh
 $ clone the repository
-$ npm install
 $ cp .env.template .env
 # populate .env with the appropriate values
 # Update baseUri in public/scripts/index.js
